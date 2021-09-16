@@ -28,7 +28,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
 
         http.authorizeRequests().antMatchers("/**")
-                .hasIpAddress("192.168.0.70")
+                .permitAll()
+//                .hasIpAddress("192.168.0.70")
                 .and()
                 .addFilter(getAuthenticationFilter());
 
@@ -45,9 +46,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        // 로그인 시도 시, AuthenticationFilter 클래스가 가장 먼저 호출
+        // 생성자를 통해 객체 생성
+        // authenticationManager() 은 인증이 성공하였으면, 인증된 객체를 다시 돌려주는 역할
+        AuthenticationFilter authenticationFilter =
+                new AuthenticationFilter(authenticationManager(), userService, env);
 
-        authenticationFilter.setAuthenticationManager(authenticationManager());
+        // 기본 생성자는 필요없다.
+//        authenticationFilter.setAuthenticationManager(authenticationManager());
 
         return authenticationFilter;
     }
